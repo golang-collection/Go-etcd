@@ -9,8 +9,8 @@ import (
 
 /**
 * @Author: super
-* @Date: 2021-02-01 15:28
-* @Description: 写入kv
+* @Date: 2021-02-01 21:09
+* @Description:
 **/
 
 func main() {
@@ -34,19 +34,10 @@ func main() {
 
 	// 用于操作etcdkv
 	kv = clientv3.NewKV(client)
-	if putResp, err := kv.Put(context.TODO(), "/cron/jobs/job1", "hello1"); err != nil{
+	if deleteResp, err := kv.Delete(context.TODO(), "/cron/jobs/job1",clientv3.WithPrevKV()); err != nil{
 		fmt.Println(err)
 	}else{
-		fmt.Println("revision", putResp.Header.Revision)
+		fmt.Println(deleteResp.PrevKvs)
+		fmt.Println(deleteResp.Deleted)
 	}
-	//获取之前revision的值
-	if putResp, err := kv.Put(context.TODO(), "/cron/jobs/job2", "hellohello", clientv3.WithPrevKV()); err != nil{
-		fmt.Println(err)
-	}else{
-		fmt.Println("revision", putResp.Header.Revision)
-		if putResp.PrevKv != nil{
-			fmt.Println("prevValue", string(putResp.PrevKv.Value))
-		}
-	}
-
 }
